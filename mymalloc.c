@@ -53,7 +53,13 @@ void* mymalloc(int x, char* file, int line) {
 	return (void *)(new->size);
 }
 
-       
+void* myfree(int x, char* file, int line) {
+	short magic = 1999;
+	if (myblock[sizeof(short)] != magic) {
+		printf("trying to free something that has not been malloced\n");
+		return NULL;
+	}
+}        
 
 
 
