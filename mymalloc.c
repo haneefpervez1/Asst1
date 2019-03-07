@@ -1,5 +1,14 @@
 #include "mymalloc.h"
 
+void insert(struct memEntry * head, int data)
+{
+ struct memEntry * temp = NULL;
+ temp = myblock[data];
+ temp->size = 4096-data;
+ temp->isFree = 1;
+ temp->next = NULL;
+ head->next = temp;
+}
 void* mymalloc(int x, char* file, int line) {
 	struct memEntry * head = NULL;
 	short magic=1999;
@@ -25,17 +34,19 @@ void* mymalloc(int x, char* file, int line) {
 	 
 	 struct memEntry new = myblock[head->size + sizeof(struct memEntry)];
 	 new = head;
-	 while(new->isFree==1){
+	 while(new->isFree==1) {
 	 	if(new->size==x) {
 	 	  new->isFree=0;
 	 	}
 	 	else if(new->size > x) {
 	 	 int temp = new->size;
 	 	 new->size=x;
-	 	 struct memeEntry temp = myblock[temp->size + sizeof(struct memEntry)];
+	 	 insert(new, data)
 	 	}
+	 new = new->next;
 	}
 }
+
        
 
 
