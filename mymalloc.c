@@ -14,17 +14,27 @@ void* mymalloc(int x, char* file, int line) {
 		printf("Not enough space left\n");
 		return NULL;
 	}
-	 if (myblock[sizeof(short)]!= magic)
-	 {
-	   *(short *) block[sizeof(short)]=magic;
+	  if (myblock[sizeof(short)]!= magic) {
+	  *(short *) block[sizeof(short)]=magic;
 	  head = myblock[sizeof(struct memEntry)];
 	  data = sizeof(struct memEntry) + sizeof(short);
 	  head->next = NULL;
 	  head->size = x;
-	 }
+	  head->isFree=0;
+	}
 	 
-	 struct memEntry new = NULL;
+	 struct memEntry new = myblock[head->size + sizeof(struct memEntry)];
 	 new = head;
+	 while(new->isFree==1){
+	 	if(new->size==x) {
+	 	  new->isFree=0;
+	 	}
+	 	else if(new->size > x) {
+	 	 int temp = new->size;
+	 	 new->size=x;
+	 	 struct memeEntry temp = myblock[temp->size + sizeof(struct memEntry)];
+	 	}
+	}
 }
        
 
