@@ -38,15 +38,19 @@ void* mymalloc(int x, char* file, int line) {
 	 while(new->isFree==1) {
 	 	if(new->size==x) {
 	 	  new->isFree=0;
+	 	  break;
 	 	}
 	 	else if(new->size > x) {
 	 	 int temp = new->size;
 	 	 new->size=x;
 	 	 insert(new, data)
+	 	 new->isFree=0;
+	 	 break;
 	 	}
 	 new = new->next;
 	 data = sizeof(struct memEntry) + new->size;
 	}
+	return (void *)(new->size);
 }
 
        
