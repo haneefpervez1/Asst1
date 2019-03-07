@@ -16,4 +16,4 @@ int size;
 struct memEntry * next;
 };
 
-void insert(struct memEntry * head, int data)
+void insert(struct memEntry * head, int data);

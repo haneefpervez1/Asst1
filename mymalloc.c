@@ -3,7 +3,7 @@
 void insert(struct memEntry * head, int data)
 {
  struct memEntry * temp = NULL;
- temp = myblock[data];
+ temp = (struct memEntry*)&myblock[data];
  temp->size = 4096-data;
  temp->isFree = 1;
  temp->next = NULL;
@@ -13,19 +13,19 @@ void* mymalloc(int x, char* file, int line) {
 	struct memEntry * head = NULL;
 	short magic=1999;
 	int data = 0;
-	if (allocate <= 0){
+	if (x <= 0){
 		printf("Enter a valid number to malloc\n");
 		return NULL;
-	} if ((allocate + sizeof(struct memEntry)) >= 4096) {
+	} if ((x + sizeof(struct memEntry)) >= 4096) {
 		printf("%d is too large\n");
 		return NULL;
-	} if ((allocate + data) >= 4096) {
+	} if ((x + data) >= 4096) {
 		printf("Not enough space left\n");
 		return NULL;
 	}
 	  if (myblock[sizeof(short)]!= magic) {
-	  *(short *) block[sizeof(short)]=magic;
-	  head = myblock[sizeof(struct memEntry)];
+	  *(short *)&myblock[sizeof(short)]=magic;
+	  head = (struct memEntry*)&myblock[sizeof(struct memEntry)];
 	  head->next = NULL;
 	  head->size = x;
 	  head->isFree=0;
@@ -33,7 +33,7 @@ void* mymalloc(int x, char* file, int line) {
 	  insert(head, data);
 	}
 	 
-	 struct memEntry new = myblock[head->size + sizeof(struct memEntry)];
+	 struct memEntry* new = (struct memEntry*)&myblock[head->size + sizeof(struct memEntry)];
 	 new = head;
 	 while(new->isFree==1) {
 	 	if(new->size==x) {
@@ -43,14 +43,14 @@ void* mymalloc(int x, char* file, int line) {
 	 	else if(new->size > x) {
 	 	 int temp = new->size;
 	 	 new->size=x;
-	 	 insert(new, data)
+	 	 insert(new, data);
 	 	 new->isFree=0;
 	 	 break;
 	 	}
 	 new = new->next;
 	 data = sizeof(struct memEntry) + new->size;
 	}
-	return (void *)(new->size);
+	return (void *)(new + sizeof(struct memEntry));
 }
 
 void* myfree(int x, char* file, int line) {
@@ -59,9 +59,22 @@ void* myfree(int x, char* file, int line) {
 		printf("trying to free something that has not been malloced\n");
 		return NULL;
 	}
+	printf("%d\n", myblock[sizeof(short)]);
+	
 }        
 
-
+void mergeMetadata() {
+	struct memEntry* head = (struct memEntry*)&myblock[sizeof(struct memEntry)];
+	while (head->next != NULL) {
+		if (head->isFree == 1 && head->next->isFree == 1) {
+			int tempSize = head->next->size;
+			head->size = head->size + tempSize;
+			head->next = head->next->next;
+			head = head->next;
+		}
+		head = head->next;
+	}
+}
 
 
 int main (int argc, char** argv) {
