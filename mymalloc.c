@@ -23,7 +23,7 @@ void* mymalloc(int x, char* file, int line) {
 		printf("Not enough space left\n");
 		return NULL;
 	}
-	  if (myblock[sizeof(short)]!= magic) {
+	  if ( *(short *)myblock!= magic) {
 	  *(short *)&myblock[sizeof(short)]=magic;
 	  head = (struct memEntry*)&myblock[sizeof(struct memEntry)];
 	  head->next = NULL;
@@ -55,7 +55,7 @@ void* mymalloc(int x, char* file, int line) {
 
 void* myfree(int x, char* file, int line) {
 	short magic = 1999;
-	if (myblock[sizeof(short)] != magic) {
+	if ( *(short*)myblock != magic) {
 		printf("trying to free something that has not been malloced\n");
 		return NULL;
 	}

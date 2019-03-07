@@ -17,3 +17,4 @@ struct memEntry * next;
 };
 
 void insert(struct memEntry * head, int data);
+void mergeMetadata()
