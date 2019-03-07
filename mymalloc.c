@@ -19,17 +19,18 @@ void* mymalloc(int x, char* file, int line) {
 	} if ((allocate + sizeof(struct memEntry)) >= 4096) {
 		printf("%d is too large\n");
 		return NULL;
-	} if ((allocate + dataUsed) >= 4096) {
+	} if ((allocate + data) >= 4096) {
 		printf("Not enough space left\n");
 		return NULL;
 	}
 	  if (myblock[sizeof(short)]!= magic) {
 	  *(short *) block[sizeof(short)]=magic;
 	  head = myblock[sizeof(struct memEntry)];
-	  data = sizeof(struct memEntry) + sizeof(short);
 	  head->next = NULL;
 	  head->size = x;
 	  head->isFree=0;
+	  data = sizeof(struct memEntry) + sizeof(short) + head->size;
+	  insert(head, data);
 	}
 	 
 	 struct memEntry new = myblock[head->size + sizeof(struct memEntry)];
@@ -44,6 +45,7 @@ void* mymalloc(int x, char* file, int line) {
 	 	 insert(new, data)
 	 	}
 	 new = new->next;
+	 data = sizeof(struct memEntry) + new->size;
 	}
 }
 
