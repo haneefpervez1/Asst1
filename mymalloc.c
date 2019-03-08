@@ -76,13 +76,13 @@ void* mymalloc(int x, char* file, int line) {
 	return (void *)(ret);
 }
 
-void* myfree(void* F, char* file, int line) {
+void myfree(void* F, char* file, int line) {
 	short magic = 1999;
 	//*((short*)myblock) = magic;
 	//printf("%d\n", *(short*)myblock);
 	if ( *(short*)myblock != magic) {
 		printf("trying to free something that has not been malloced\n");
-		return NULL;
+		return;
 	}
 	
 	/* The code below is to determine the MetaData's isFree bit to see if the data is allocated.
@@ -90,19 +90,20 @@ void* myfree(void* F, char* file, int line) {
 	   allowing us to access the isFree field and determine if it isFree memory or not. If it is, then flip the bit and return the original pointer.
 	   if not, examine the entire linked list for a match where no match returns NULL.
 	*/
+	/*
 	char * ptr = (char *) F;
 	ptr = ptr-sizeof(struct memEntry);
 	struct memEntry * free_ptr = (struct memEntry *) ptr;
+	*/
+	struct memEntry* free_ptr = NULL;
+	free_ptr = (struct memEntry*)(F - sizeof(struct memEntry));
 	if(free_ptr->isFree=0)
 	{
 	 free_ptr->isFree=1;
 	}
-	else
-	{
-	 
-	}
-	printf("%d\n", myblock[sizeof(short)]);
+	//printf("%d\n", myblock[sizeof(short)]);
 	
+	return;
 }        
 
 void mergeMetadata() {
@@ -123,9 +124,8 @@ void mergeMetadata() {
 
 
 int main (int argc, char** argv) {
-	mymalloc(10, "alack", 2);
-	mymalloc(20, "alack", 2);
-	mymalloc(30, "alack", 2);
-	void* a;
+	void* a = mymalloc(10, "alack", 2);
+	//mymalloc(20, "alack", 2);
+	//mymalloc(30, "alack", 2);
 	myfree(a, "alack", 1);
 }

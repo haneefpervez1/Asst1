@@ -18,6 +18,6 @@ struct memEntry * next;
 
 void insert(struct memEntry * head, int data);
 void mergeMetadata();
-void* myfree(void* F, char* file, int line);
+void myfree(void* F, char* file, int line);
 void* mymalloc(int x, char* file, int line);
 
