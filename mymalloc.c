@@ -1,16 +1,6 @@
 #include "mymalloc.h"
 
-void insert(struct memEntry * head, int data)
-{
- struct memEntry * temp = NULL;
- temp = myblock[data];
- temp->size = 4096-data;
- temp->isFree = 1;
- temp->next = NULL;
- head->next = temp;3
-}
 void* mymalloc(int x, char* file, int line) {
-	
 	struct memEntry * head = NULL;
 	short magic=1999;
 	if (x <= 0){
@@ -40,7 +30,7 @@ void* mymalloc(int x, char* file, int line) {
 	 	  
 	 	  if( size_remain > sizeof(struct memEntry) + 1 )
 	 	  {	 	  
-		 	  char* ptr = new;
+		 	  char* ptr = (char *)new;
 		 	  ptr = ptr + sizeof(struct memEntry);
 		 	  ptr = ptr + new->size;
 		 	  
@@ -64,11 +54,28 @@ void* mymalloc(int x, char* file, int line) {
 	return (void *)(ret);
 }
 
-void* myfree(int x, char* file, int line) {
+void* myfree(void* F, char* file, int line) {
 	short magic = 1999;
 	if ( *(short*)myblock != magic) {
 		printf("trying to free something that has not been malloced\n");
 		return NULL;
+	}
+	
+	/* The code below is to determine the MetaData's isFree bit to see if the data is allocated.
+	   The ptr location gets decremented by size of struct memEntry to point to the beginning of the struct 
+	   allowing us to access the isFree field and determine if it isFree memory or not. If it is, then flip the bit and return the original pointer.
+	   if not, examine the entire linked list for a match where no match returns NULL.
+	*/
+	char * ptr = (char *) F;
+	ptr = ptr-sizeof(struct memEntry);
+	struct memEntry * free_ptr = (struct memEntry *) ptr;
+	if(free_ptr->isFree=0)
+	{
+	 free_ptr->isFree=1;
+	}
+	else
+	{
+	 
 	}
 	printf("%d\n", myblock[sizeof(short)]);
 	
@@ -76,12 +83,15 @@ void* myfree(int x, char* file, int line) {
 
 void mergeMetadata() {
 	struct memEntry* head = (struct memEntry*)&myblock[sizeof(struct memEntry)];
-	while (head->next != NULL) {
-		if (head->isFree == 1 && head->next->isFree == 1) {
+	while (head->next != NULL) 
+	{
+		if (head->isFree == 1 && head->next->isFree == 1) 
+		{
 			int tempSize = head->next->size;
 			head->size = head->size + tempSize;
 			head->next = head->next->next;
 			head = head->next;
+			continue;
 		}
 		head = head->next;
 	}
