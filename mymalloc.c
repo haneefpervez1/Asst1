@@ -1,6 +1,8 @@
 #include "mymalloc.h"
 
 void* mymalloc(int x, char* file, int line) {
+	//printf("%d\n", sizeof(struct memEntry));
+	//printf("%d\n", sizeof(short));
 	struct memEntry * head = NULL;
 	short magic=1999;
 	if (x <= 0){
@@ -11,16 +13,25 @@ void* mymalloc(int x, char* file, int line) {
 		printf("%d is too large\n");
 		return NULL;
 	}
+	
 	  if ( *(short *)myblock!= magic) {
-	  *(short *)&myblock=magic;
-	  head = (struct memEntry*)&myblock; // myblock
+		*((short*)myblock) = magic;
+	 // *(short *)&myblock=magic;
+		printf("short %d\n", *((short*)myblock));
+	  head = (struct memEntry*)&myblock[sizeof(struct memEntry)]; // myblock
 	  head->next = NULL;
-	  head->size = 4096 - sizeof(struct memEntry);
+	  head->size = 4096 - sizeof(struct memEntry) - sizeof(short);
 	  head->isFree=1;
+		struct memEntry* temp = head;
+	while (temp != NULL) {
+		printf("size: %d isFree: %d \n", temp->size, temp->isFree);
+		temp = temp->next;
+	}
+		//printf("short %d\n", *((short*)myblock));
 	  //data = sizeof(struct memEntry) + sizeof(short) + head->size;
 	  //insert(head, data);
 	}
-	 
+	 printf("inserting %d\n", x);
 	 struct memEntry* new = head;
 	 while(new != NULL) {
 	 	if(new->size>=x && new->isFree==1) {
@@ -34,20 +45,31 @@ void* mymalloc(int x, char* file, int line) {
 		 	  ptr = ptr + sizeof(struct memEntry);
 		 	  ptr = ptr + new->size;
 		 	  
-		 	  struct memEntry* next = (struct memEntry*) ptr;
-		 	  next->size = size_remain - sizeof(struct memEntry);
-		 	  next->next = new->next;
-		 	  new->next = next;
+		 	  struct memEntry* nextNode = (struct memEntry*) ptr;
+		 	  nextNode->size = size_remain - sizeof(struct memEntry);
+		 	  nextNode->next = new->next;
+		 	  new->next = nextNode;
 	 	  }
 	 	  break;
 	 	}
-	 new = new->next;
+	   else
+	   {
+		break;
+       }
+	 new = new->next;;
 	}
+	struct memEntry* temp = head;
+	while (temp != NULL) {
+		printf("size: %d isFree: %d \n", temp->size, temp->isFree);
+		temp = temp->next;
+	}
+	/*
 	if(new==NULL)
 	{
+		printf("new is null\n");
 	 return NULL;
 	}
-	
+	*/
 	char* ret = (char*)new;
 	ret = ret + sizeof(struct memEntry);
 	
@@ -56,6 +78,8 @@ void* mymalloc(int x, char* file, int line) {
 
 void* myfree(void* F, char* file, int line) {
 	short magic = 1999;
+	//*((short*)myblock) = magic;
+	//printf("%d\n", *(short*)myblock);
 	if ( *(short*)myblock != magic) {
 		printf("trying to free something that has not been malloced\n");
 		return NULL;
@@ -99,5 +123,9 @@ void mergeMetadata() {
 
 
 int main (int argc, char** argv) {
-	mymalloc(1, "alack", 2);
+	mymalloc(10, "alack", 2);
+	mymalloc(20, "alack", 2);
+	mymalloc(30, "alack", 2);
+	void* a;
+	myfree(a, "alack", 1);
 }
