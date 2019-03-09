@@ -1,4 +1,7 @@
-all: first
-first: mymalloc.c
-	-gcc -O -g -o mymalloc mymalloc.c
-clean: rm -rf mymalloc
+all: memgrind.c mymalloc.o
+	gcc -o memgrind memgrind.c mymalloc.o
+mymalloc.o: mymalloc.c mymalloc.h
+	gcc -c mymalloc.c
+clean:
+	rm ./memgrind ./*.o
+		echo Clean done
