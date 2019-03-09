@@ -55,7 +55,26 @@ void workLoadC() {
 }
 
 void workLoadD() {
-
+	printf("workload d\n");
+	void* arr[5000];
+	int numMallocs = 0, index = 0;
+	while (numMallocs != 50) {
+		int operation = rand() % (2);
+		if (operation == 0) printf("mallocing ");
+		else printf("freeing\n");
+		if (operation == 0) {
+			int numBytes = rand() % (64+1-1)+1;
+			printf("%d bytes\n", numBytes);
+			void* allocatePtr = malloc(numBytes);
+			arr[index] = allocatePtr;
+			index++;
+			numMallocs++;
+		} else {
+			int freeIndex = rand() % (index+1);
+			free(arr[freeIndex]);
+		}
+	}
+	printf("end workload d\n");
 }
 
 void workLoadE() {
@@ -75,12 +94,15 @@ void workLoadF() {
 int main(int argc, char** argv){
 	//workLoadC();
 	//workLoadF();
-	mymalloc(10, "alack", 2);
-	void* a = mymalloc(20, "alack", 2);
-	myfree(a, "alack", 1);
-	void* b = mymalloc(30, "alack", 2);
-	myfree(b, "alack", 2);
-	mymalloc(60, "alack", 2);
-	mymalloc(10, "alack",2);
+	//workLoadD();
+	
+	void* a = mymalloc(10, "alack", 2);
+	void* b = mymalloc(20, "alack", 2);
+	myfree(b, "alack", 1);
+	void* c = mymalloc(30, "alack", 2);
+	myfree(c, "alack", 2);
+	void* d = mymalloc(60, "alack", 2);
+	void* e = mymalloc(10, "alack",2);
 	return 0;
 }
+
