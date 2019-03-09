@@ -20,10 +20,10 @@
 	 	  }
 }*/
 void* mymalloc(int x, char* file, int line) {
-	//printf("%d\n", sizeof(struct memEntry));
-	//printf("%d\n", sizeof(short));
+	//printf("memEntry size %d\n", sizeof(struct memEntry));
 	struct memEntry *head;
 	short magic=1999;
+	//printf("magic number size %d\n", sizeof(magic));
 	if (x <= 0){
 		printf("Enter a valid number to malloc\n");
 		return NULL;
@@ -43,10 +43,12 @@ void* mymalloc(int x, char* file, int line) {
 	  head->isFree=1;
 	  //insert(head, x);
 	  struct memEntry* temp = head;
+		/*
 	  while (temp != NULL) {
 		printf("size: %d isFree: %d \n", temp->size, temp->isFree);
 		temp = temp->next;
 	}
+	*/
 		//printf("short %d\n", *((short*)myblock));
 	  //data = sizeof(struct memEntry) + sizeof(short) + head->size;
 	  //insert(head, data);
@@ -99,48 +101,59 @@ void myfree(void* F, char* file, int line) {
 		printf("trying to free something that has not been malloced\n");
 		return;
 	}
-	
+	printf("freeing \n");
 	/* The code below is to determine the MetaData's isFree bit to see if the data is allocated.
 	   The ptr location gets decremented by size of struct memEntry to point to the beginning of the struct 
 	   allowing us to access the isFree field and determine if it isFree memory or not. If it is, then flip the bit and return the original pointer.
 	   if not, examine the entire linked list for a match where no match returns NULL.
 	*/
-	/*
-	char * ptr = (char *) F;
-	ptr = ptr-sizeof(struct memEntry);
-	struct memEntry * free_ptr = (struct memEntry *) ptr;
-	*/
 	struct memEntry* free_ptr = NULL;
 	free_ptr = (struct memEntry*)(F - sizeof(struct memEntry));
-	if(free_ptr->isFree=0)
+	printf("free_ptr %d\n", free_ptr->size);
+	if(free_ptr->isFree==0)
 	{
 	 free_ptr->isFree=1;
 	}
-	//printf("%d\n", myblock[sizeof(short)]);
 	
+	//printf("%d\n", myblock[sizeof(short)]);
+	mergeMetadata();
+	struct memEntry* head = (struct memEntry*)&myblock[sizeof(struct memEntry)];
+	while (head != NULL) {
+		printf("size: %d isFree %d \n", head->size, head->isFree);
+		head = head->next;
+	}
 	return;
 }        
 
 void mergeMetadata() {
 	struct memEntry* head = (struct memEntry*)&myblock[sizeof(struct memEntry)];
-	while (head->next != NULL) 
+	printf("merge %d\n", head->size);
+	struct memEntry* temp = head;
+	while (temp != NULL) 
 	{
-		if (head->isFree == 1 && head->next->isFree == 1) 
+		if (temp->isFree == 1 && temp->next->isFree == 1 ) 
 		{
-			int tempSize = head->next->size;
-			head->size = head->size + tempSize;
-			head->next = head->next->next;
-			head = head->next;
+			printf("first free %d second free %d\n", temp->size, temp->next->size);
+			int tempSize = temp->next->size;
+			temp->size = temp->size + tempSize;
+			//struct memEntry* tempNode = temp->next;
+			//tempNode = NULL;
+			temp->next = temp->next->next;
+			temp = temp->next;
 			continue;
 		}
-		head = head->next;
+		temp = temp->next;
 	}
 }
 
 
 int main (int argc, char** argv) {
-	void* a = mymalloc(10, "alack", 2);
-	mymalloc(20, "alack", 2);
-	mymalloc(30, "alack", 2);
+	mymalloc(10, "alack", 2);
+	void* a = mymalloc(20, "alack", 2);
 	myfree(a, "alack", 1);
+	void* b = mymalloc(30, "alack", 2);
+	myfree(b, "alack", 2);
+	mymalloc(60, "alack", 2);
+	//mymalloc(10, "alack",2);
+	
 }
