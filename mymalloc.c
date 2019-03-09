@@ -164,18 +164,19 @@ void mergeMetadata() {
 }
 void traversal(struct memEntry * head, void * ptr)
 {
- 	while (head!=NULL){
+	struct memEntry * ptr = head;
+ 	while (ptr!=NULL){
  	 struct memEntry* free_ptr = NULL;
 	 free_ptr = (struct memEntry*)(head + sizeof(struct memEntry));
-	 	if (free_ptr == ptr){
-	 	 	if(free_ptr->isFree=0){
+	 	if (free_ptr == ptr)
+	 	{
+	 	 	if(free_ptr->isFree=0)
+	 	 	{
 	 	 	 free_ptr->isFree=1;
 	 	 	}
-	 	 	else {
-	 	 	 return;
-	 	 	}
 	 	}
- 	}	
+	  ptr=ptr->next;	
+	 }	
 }
 
 
