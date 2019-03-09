@@ -24,22 +24,33 @@ void workLoadB() {
 }
 void workLoadC() {
 	void * arr[5000];
-	int allocated, malloc_count, index=0;
+	int allocated, index=0;
+	printf("%f\n", arr[index]);
 	while(allocated!=50){
 		int a = (rand() % 2);
-		if(a==0){	// Malloc
+		if(a==0 && index!=5000){	// Malloc as long as index is not 5000
 		 arr[index]=malloc(1);
 		 index++;
 		 allocated++;
-		 malloc_count++;
 		}
-		else {				//free
+		else if (a==1 && index!=0){		//Free as Long as there is a pointer to free
 		 int f = (rand() % index+1);
+		 void * temp = arr[index];		 
 		 free(arr[f]);
+		 arr[f]=NULL;
+		 arr[index] = arr[f];
+		 arr[f] = temp;
+		 index--;
 		}
 	}
-	while(malloc_count!=0){
-		
+	while(index!=0){
+	 	 int f = (rand() % index+1);
+		 void * temp = arr[index];		 
+		 free(arr[f]);
+		 arr[f]=NULL;
+		 arr[index] = arr[f];
+		 arr[f] = temp;
+		 index--;
 	}
 }
 
