@@ -1,9 +1,28 @@
 #include "mymalloc.h"
-
+/*void insert(struct memEntry * head, int x)
+{
+ struct memEntry * node = NULL;
+ node = head;
+ 	while(node->next!=NULL)
+ 	{
+ 	 node=node->next;
+ 	} 
+ 	 int size_remain = node->size - x;	 	  	 	  
+	 if(size_remain > sizeof(struct memEntry) + 1)
+	 	  {	 	  
+		 	  char* ptr = (char *)node;
+		 	  ptr = ptr + sizeof(struct memEntry);
+		 	  ptr = ptr + node->size;
+		 	  struct memEntry* nextNode = (struct memEntry*) ptr;
+		 	  nextNode->size = size_remain - sizeof(struct memEntry);
+		 	  nextNode->next = node->next;
+		 	  node->next = nextNode;
+	 	  }
+}*/
 void* mymalloc(int x, char* file, int line) {
 	//printf("%d\n", sizeof(struct memEntry));
 	//printf("%d\n", sizeof(short));
-	struct memEntry * head = NULL;
+	struct memEntry *head;
 	short magic=1999;
 	if (x <= 0){
 		printf("Enter a valid number to malloc\n");
@@ -22,8 +41,9 @@ void* mymalloc(int x, char* file, int line) {
 	  head->next = NULL;
 	  head->size = 4096 - sizeof(struct memEntry) - sizeof(short);
 	  head->isFree=1;
-		struct memEntry* temp = head;
-	while (temp != NULL) {
+	  //insert(head, x);
+	  struct memEntry* temp = head;
+	  while (temp != NULL) {
 		printf("size: %d isFree: %d \n", temp->size, temp->isFree);
 		temp = temp->next;
 	}
@@ -47,15 +67,12 @@ void* mymalloc(int x, char* file, int line) {
 		 	  
 		 	  struct memEntry* nextNode = (struct memEntry*) ptr;
 		 	  nextNode->size = size_remain - sizeof(struct memEntry);
+		 	  nextNode->isFree=1;
 		 	  nextNode->next = new->next;
 		 	  new->next = nextNode;
 	 	  }
 	 	  break;
 	 	}
-	   else
-	   {
-		break;
-       }
 	 new = new->next;;
 	}
 	struct memEntry* temp = head;
@@ -63,13 +80,11 @@ void* mymalloc(int x, char* file, int line) {
 		printf("size: %d isFree: %d \n", temp->size, temp->isFree);
 		temp = temp->next;
 	}
-	/*
 	if(new==NULL)
 	{
-		printf("new is null\n");
+	 printf("new is null\n");
 	 return NULL;
 	}
-	*/
 	char* ret = (char*)new;
 	ret = ret + sizeof(struct memEntry);
 	
@@ -125,7 +140,7 @@ void mergeMetadata() {
 
 int main (int argc, char** argv) {
 	void* a = mymalloc(10, "alack", 2);
-	//mymalloc(20, "alack", 2);
-	//mymalloc(30, "alack", 2);
+	mymalloc(20, "alack", 2);
+	mymalloc(30, "alack", 2);
 	myfree(a, "alack", 1);
 }
