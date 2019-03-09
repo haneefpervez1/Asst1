@@ -19,23 +19,26 @@
 		 	  node->next = nextNode;
 	 	  }
 }*/
+/*
+	This is our mymalloc function. It takes a size to malloc, a file name, and line number.
+*/
 void* mymalloc(int x, char* file, int line) {
 	//printf("memEntry size %d\n", sizeof(struct memEntry));
 	struct memEntry *head;
-	short magic=1999;
+	short magic=1999;									// This is the magic number to check if the malloc call is the first malloc or not
 	//printf("magic number size %d\n", sizeof(magic));
-	if (x <= 0){
+	if (x <= 0){										// Returns NULL if user tries to malloc an invalid number (0 or negative number)
 		printf("Enter a valid number to malloc\n");
 		return NULL;
-	} if ((x + sizeof(struct memEntry)) >= 4096)
+	} if ((x + sizeof(struct memEntry)) >= 4096)		// Returns NULL if user tries to malloc something that is too large to fit in myblock
 	 {
 		printf("%d is too large\n");
 		return NULL;
 	}
 	
-	  if ( *(short *)myblock!= magic) {
-		*((short*)myblock) = magic;
-	 // *(short *)&myblock=magic;
+	  if ( *(short *)myblock!= magic) {					// This part checks if it is the first malloc,
+		*((short*)myblock) = magic;						// if it is it adds the magic number to the beginning of 
+	 // *(short *)&myblock=magic;						// myblock and adds the first metadata
 		printf("short %d\n", *((short*)myblock));
 	  head = (struct memEntry*)&myblock[sizeof(struct memEntry)]; // myblock
 	  head->next = NULL;
@@ -56,18 +59,18 @@ void* mymalloc(int x, char* file, int line) {
 	 printf("inserting %d\n", x);
 	 struct memEntry* new = head;
 	 while(new != NULL) {
-	 	if(new->size>=x && new->isFree==1) {
-	 	  new->isFree=0;
+	 	if(new->size>=x && new->isFree==1) {				// if there has been a previous malloc call that has been freed and can
+	 	  new->isFree=0;									// fit the size of the new malloc call it will be added here
 	 	  int size_remain = new->size - x;	 	  
 	 	  new->size = x;
 	 	  
-	 	  if( size_remain > sizeof(struct memEntry) + 1 )
+	 	  if( size_remain > sizeof(struct memEntry) + 1 )	// if a new memEntry needs to be created
 	 	  {	 	  
-		 	  char* ptr = (char *)new;
-		 	  ptr = ptr + sizeof(struct memEntry);
+		 	  char* ptr = (char *)new;						// moving a char ptr to the right place
+		 	  ptr = ptr + sizeof(struct memEntry);			
 		 	  ptr = ptr + new->size;
 		 	  
-		 	  struct memEntry* nextNode = (struct memEntry*) ptr;
+		 	  struct memEntry* nextNode = (struct memEntry*) ptr;		// adding the new metadata and allocating the space
 		 	  nextNode->size = size_remain - sizeof(struct memEntry);
 		 	  nextNode->isFree=1;
 		 	  nextNode->next = new->next;
@@ -88,20 +91,22 @@ void* mymalloc(int x, char* file, int line) {
 	 return NULL;
 	}
 	char* ret = (char*)new;
-	ret = ret + sizeof(struct memEntry);
+	ret = ret + sizeof(struct memEntry);	// moving the ptr to the start of the allocated spaces
 	
-	return (void *)(ret);
+	return (void *)(ret);					// returning the void ptr
 }
-
+/*
+	This is our free function. It takes a void ptr that is going to be freed, a file, and a line number
+*/
 void myfree(void* F, char* file, int line) {
-	short magic = 1999;
+	short magic = 1999;							// the magic number to check if something has been malloced already
 	//*((short*)myblock) = magic;
 	//printf("%d\n", *(short*)myblock);
-	if ( *(short*)myblock != magic) {
+	if ( *(short*)myblock != magic) {			// the magic number is not in myblock meaning no mallocs have been made yet
 		printf("trying to free something that has not been malloced\n");
 		return;
 	}
-	if(F==NULL){
+	if(F==NULL){								// the pointer given is NULL
 		printf("pointer F is NULL. Cannot free NULL pointer\n");
 		return;
 	}
@@ -124,22 +129,27 @@ void myfree(void* F, char* file, int line) {
 	 traversal(head, F);
 	}
 	//printf("%d\n", myblock[sizeof(short)]);
-	mergeMetadata();
+	mergeMetadata();			// merges adjacent free nodes
 	while (head != NULL) {
 		printf("size: %d isFree %d \n", head->size, head->isFree);
 		head = head->next;
 	}
 	return;
 }        
-
+/*
+	This function traverses through the metadata and if two consective metadatas are free, merges them into one 
+*/
 void mergeMetadata() {
-	struct memEntry* head = (struct memEntry*)&myblock[sizeof(struct memEntry)];
+	struct memEntry* head = (struct memEntry*)&myblock[sizeof(struct memEntry)];  // starting from the first metadata
 	printf("merge %d\n", head->size);
 	struct memEntry* temp = head;
 	while (temp != NULL) 
 	{
 		if (temp->isFree == 1 && temp->next->isFree == 1 ) 
 		{
+		/*
+			This part combines two free nodes into one
+		*/
 			printf("first free %d second free %d\n", temp->size, temp->next->size);
 			int tempSize = temp->next->size;
 			temp->size = temp->size + tempSize + sizeof(struct memEntry);

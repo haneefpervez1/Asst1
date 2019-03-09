@@ -20,5 +20,5 @@ void insert(struct memEntry * head, int data);
 void mergeMetadata();
 void myfree(void* F, char* file, int line);
 void* mymalloc(int x, char* file, int line);
-void traversal(struct memEntry * head, void * ptr)
+void traversal(struct memEntry * head, void * ptr);
 
