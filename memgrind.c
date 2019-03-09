@@ -7,3 +7,18 @@ void workLoadA() {
 		free(1);
 	}
 }
+void workLoadB() {
+ void * arr[3000];
+ int i,mallCount;
+ mallCount=0;
+ for(i=0;i<150;i++){
+  arr[i] = malloc[1];
+  mallCount ++;
+  	if(mallCount==50){ 
+  	   break;
+ 	}
+ }
+ for(i=0;i<150;i++){
+  free(arr[i]);
+ }
+}
