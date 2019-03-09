@@ -59,14 +59,28 @@ void workLoadD() {
 }
 
 void workLoadE() {
-
+	void * arr[3];
+	int i;
+	for(i=0;i<3;i++){
+	 arr[i]=malloc(10);
+	}
+	free(arr[2]);
+	free(arr[1]);
+	free(arr[0]);
 }
 
-void workLoadF() {
-
+void workLoadF() {	
 }
 
 int main(int argc, char** argv){
-	workLoadC();
+	//workLoadC();
+	//workLoadF();
+	mymalloc(10, "alack", 2);
+	void* a = mymalloc(20, "alack", 2);
+	myfree(a, "alack", 1);
+	void* b = mymalloc(30, "alack", 2);
+	myfree(b, "alack", 2);
+	mymalloc(60, "alack", 2);
+	mymalloc(10, "alack",2);
 	return 0;
 }

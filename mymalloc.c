@@ -1,24 +1,4 @@
 #include "mymalloc.h"
-/*void insert(struct memEntry * head, int x)
-{
- struct memEntry * node = NULL;
- node = head;
- 	while(node->next!=NULL)
- 	{
- 	 node=node->next;
- 	} 
- 	 int size_remain = node->size - x;	 	  	 	  
-	 if(size_remain > sizeof(struct memEntry) + 1)
-	 	  {	 	  
-		 	  char* ptr = (char *)node;
-		 	  ptr = ptr + sizeof(struct memEntry);
-		 	  ptr = ptr + node->size;
-		 	  struct memEntry* nextNode = (struct memEntry*) ptr;
-		 	  nextNode->size = size_remain - sizeof(struct memEntry);
-		 	  nextNode->next = node->next;
-		 	  node->next = nextNode;
-	 	  }
-}*/
 /*
 	This is our mymalloc function. It takes a size to malloc, a file name, and line number.
 */
@@ -32,7 +12,7 @@ void* mymalloc(int x, char* file, int line) {
 		return NULL;
 	} if ((x + sizeof(struct memEntry)) >= 4096)		// Returns NULL if user tries to malloc something that is too large to fit in myblock
 	 {
-		printf("%d is too large\n");
+		printf("%d is too large\n", x);
 		return NULL;
 	}
 	
@@ -44,17 +24,13 @@ void* mymalloc(int x, char* file, int line) {
 	  head->next = NULL;
 	  head->size = 4096 - sizeof(struct memEntry) - sizeof(short);
 	  head->isFree=1;
-	  //insert(head, x);
-	  struct memEntry* temp = head;
+	  //struct memEntry* temp = head;
 		/*
 	  while (temp != NULL) {
 		printf("size: %d isFree: %d \n", temp->size, temp->isFree);
 		temp = temp->next;
 	}
 	*/
-		//printf("short %d\n", *((short*)myblock));
-	  //data = sizeof(struct memEntry) + sizeof(short) + head->size;
-	  //insert(head, data);
 	}
 	 printf("inserting %d\n", x);
 	 struct memEntry* new = head;
@@ -178,7 +154,6 @@ void traversal(struct memEntry * head, void * ptr)
 	  P=P->next;	
 	 }	
 }
-
 
 
 /*int main (int argc, char** argv) {
