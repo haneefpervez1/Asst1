@@ -181,12 +181,12 @@ void traversal(struct memEntry * head, void * ptr)
 
 
 
-int main (int argc, char** argv) {
+/*int main (int argc, char** argv) {
 	mymalloc(10, "alack", 2);
 	void* a = mymalloc(20, "alack", 2);
 	myfree(a, "alack", 1);
 	void* b = mymalloc(30, "alack", 2);
 	myfree(b, "alack", 2);
 	mymalloc(60, "alack", 2);
-	//mymalloc(10, "alack",2);
-}
+	mymalloc(10, "alack",2);
+}*/
