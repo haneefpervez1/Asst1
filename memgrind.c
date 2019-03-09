@@ -1,12 +1,12 @@
 #include "mymalloc.h"
 
-void workLoadA() {
+/*void workLoadA() {
 	int i = 0;
 	for (i = 0; i < 150; i++) {
 		void *a =malloc(1);
 		free(a);
 	}
-}
+}*/
 void workLoadB() {
 	void * arr[3000];
 	int i,malloc_Count;
@@ -92,11 +92,11 @@ void workLoadF() {
 
 }
 
-int main(int argc, char** argv){
+/*int main(int argc, char** argv){
 	//workLoadC();
 	//workLoadF();
 	//workLoadD();
-	
+	workLoadA();
 	void* a = mymalloc(10, "alack", 2);
 	void* b = mymalloc(20, "alack", 2);
 	myfree(b, "alack", 1);
@@ -105,5 +105,5 @@ int main(int argc, char** argv){
 	void* d = mymalloc(60, "alack", 2);
 	void* e = mymalloc(10, "alack",2);
 	return 0;
-}
+}*/
 
