@@ -101,6 +101,10 @@ void myfree(void* F, char* file, int line) {
 		printf("trying to free something that has not been malloced\n");
 		return;
 	}
+	if(F==NULL){
+		printf("pointer F is NULL. Cannot free NULL pointer\n");
+		return;
+	}
 	printf("freeing \n");
 	/* The code below is to determine the MetaData's isFree bit to see if the data is allocated.
 	   The ptr location gets decremented by size of struct memEntry to point to the beginning of the struct 
@@ -110,14 +114,17 @@ void myfree(void* F, char* file, int line) {
 	struct memEntry* free_ptr = NULL;
 	free_ptr = (struct memEntry*)(F - sizeof(struct memEntry));
 	printf("free_ptr %d\n", free_ptr->size);
+	struct memEntry* head = (struct memEntry*)&myblock[sizeof(struct memEntry)];
 	if(free_ptr->isFree==0)
 	{
 	 free_ptr->isFree=1;
 	}
-	
+	else
+	{
+	 traversal(head, F);
+	}
 	//printf("%d\n", myblock[sizeof(short)]);
 	mergeMetadata();
-	struct memEntry* head = (struct memEntry*)&myblock[sizeof(struct memEntry)];
 	while (head != NULL) {
 		printf("size: %d isFree %d \n", head->size, head->isFree);
 		head = head->next;
@@ -135,9 +142,9 @@ void mergeMetadata() {
 		{
 			printf("first free %d second free %d\n", temp->size, temp->next->size);
 			int tempSize = temp->next->size;
-			temp->size = temp->size + tempSize;
-			//struct memEntry* tempNode = temp->next;
-			//tempNode = NULL;
+			temp->size = temp->size + tempSize + sizeof(struct memEntry);
+			struct memEntry* tempNode = temp->next;
+			tempNode = NULL;
 			temp->next = temp->next->next;
 			temp = temp->next;
 			continue;
@@ -145,6 +152,22 @@ void mergeMetadata() {
 		temp = temp->next;
 	}
 }
+void traversal(struct memEntry * head, void * ptr)
+{
+ 	while (head!=NULL){
+ 	 struct memEntry* free_ptr = NULL;
+	 free_ptr = (struct memEntry*)(head + sizeof(struct memEntry));
+	 	if (free_ptr == ptr){
+	 	 	if(free_ptr->isFree=0){
+	 	 	 free_ptr->isFree=1;
+	 	 	}
+	 	 	else {
+	 	 	 return;
+	 	 	}
+	 	}
+ 	}	
+}
+
 
 
 int main (int argc, char** argv) {
@@ -155,5 +178,4 @@ int main (int argc, char** argv) {
 	myfree(b, "alack", 2);
 	mymalloc(60, "alack", 2);
 	//mymalloc(10, "alack",2);
-	
 }
