@@ -125,6 +125,34 @@ void workLoadF() {
 }
 
 int main(int argc, char** argv){
+	double times[6];
+	struct timeval start, end;
+	double totalTime;
+	int i = 0;
+	
+	while (i != 100) {
+	
+		gettimeofday(&start, NULL);
+		workLoadA();
+		gettimeofday(&end, NULL);
+		totalTime = end.tv_usec - start.tv_usec;
+		times[0] = times[0] + totalTime;
+
+		gettimeofday(&start, NULL);
+		workLoadB();
+		gettimeofday(&end, NULL);
+		totalTime = end.tv_usec - start.tv_usec;
+		times[1] = times[1] + totalTime;
+/*
+		gettimeofday(&start, NULL);
+		workLoadC();
+		gettimeofday(&end, NULL);
+		totalTime = end.tv_usec - start.tv_usec;
+		times[2] = times[2] + totalTime;
+		*/
+		i++;
+	}
+	printf("A: %f B: %f C: %f \n", times[0], times[1], times[2]);
 	//workLoadE();
 	//workLoadC();
 	//workLoadF();
