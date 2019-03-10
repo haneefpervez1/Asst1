@@ -1,0 +1,4 @@
+Workload E:
+	We planned E to see if the metadata could print in regular order from the first node to the last node. We did it like this because we were running into an issue eralier where we kept getting segmentation faults, but it worked in reverse order.
+Workload F: 
+	With Workload F we wanted to switch up the order of freeing nodes where the later half of the nodes were freed followed by the first half of the nodes which were freed. We also increased the size of the allocations by 100 to see how our speed and efficiency would be affected. We also used this workload to test our error handling and error messages. 

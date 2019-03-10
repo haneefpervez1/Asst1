@@ -16,7 +16,7 @@ void* mymalloc(int x, char* file, int line) {
 	}
 	  if ( *(short *)myblock!= magic) {				// This part checks if it is the first malloc,
 		*((short*)myblock) = magic;				// if it is it adds the magic number to the beginning of myblock and adds the first metadata
-		printf("short %d\n", *((short*)myblock));
+		//printf("short %d\n", *((short*)myblock));
 	  	head = (struct memEntry*)&myblock[sizeof(struct memEntry)]; // myblock
 	  	head->next = NULL;
 	  	head->size = 4096 - sizeof(struct memEntry) - sizeof(short);
@@ -25,7 +25,7 @@ void* mymalloc(int x, char* file, int line) {
 	 { 
 	 head = (struct memEntry*)&myblock[sizeof(struct memEntry)];
 	 }
-	 printf("inserting %d\n", x);
+	// printf("inserting %d\n", x);
 	 struct memEntry* new = head;
 	 while(new != NULL) {
 	 if(new->size>=x && new->isFree==1) {				// if there has been a previous malloc call that has been freed and can
@@ -48,13 +48,15 @@ void* mymalloc(int x, char* file, int line) {
 	new = new->next;;
 	}
 	struct memEntry* temp = head;
+	/*
 	while (temp != NULL) {
 		printf("size: %d isFree: %d \n", temp->size, temp->isFree);
 		temp = temp->next;
 	}
+	*/
 	if(new==NULL)
 	{
-	 printf("new is null\n");
+	// printf("new is null\n");
 	 return NULL;
 	}
 	char* ret = (char*)new;
@@ -74,7 +76,7 @@ void myfree(void* F, char* file, int line) {
 		printf("Located in file %s, line %d,Cannot free a NULL pointer\n", file, line);
 		return;
 	}
-	printf("freeing \n");
+//	printf("freeing \n");
 	/* The code below is to determine the MetaData's isFree bit to see if the data is allocated.
 	   The ptr location gets decremented by size of struct memEntry to point to the beginning of the struct 
 	   allowing us to access the isFree field and determine if it isFree memory or not. If it is, then flip the bit and return the original pointer.
@@ -82,7 +84,7 @@ void myfree(void* F, char* file, int line) {
 	*/
 	struct memEntry* free_ptr = NULL;
 	free_ptr = (struct memEntry*)(F - sizeof(struct memEntry));
-	printf("free_ptr %d\n", free_ptr->size);
+	//printf("free_ptr %d\n", free_ptr->size);
 	struct memEntry* head = (struct memEntry*)&myblock[sizeof(struct memEntry)];
 	if(free_ptr->isFree==0)
 	{
@@ -93,10 +95,12 @@ void myfree(void* F, char* file, int line) {
 	 traversal(head, F);
 	}
 	mergeMetadata();			// merges adjacent free nodes
+	/*
 	while (head != NULL) {
 		printf("size: %d isFree %d \n", head->size, head->isFree);
 		head = head->next;
 	}
+	*/
 	return;
 }        
 /*

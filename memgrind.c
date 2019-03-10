@@ -26,7 +26,7 @@ void workLoadB() {
 void workLoadC() {
 	void * arr[5000];
 	int i,allocated, index=0;
-	printf("%f\n", arr[index]);
+	//printf("%f\n", arr[index]);
 	while(allocated!=50){
 		int a = (rand() % 2);
 		if(a==0 && index!=5000){	// Malloc as long as index is not 5000
@@ -57,16 +57,16 @@ void workLoadC() {
 }
 
 void workLoadD() {
-	printf("workload d\n");
+	//printf("workload d\n");
 	void* arr[4000];
 	int i, numMallocs = 0, index = 0;
 	while (numMallocs != 50) {
 		int operation = rand() % (2);
-		if (operation == 0) printf("mallocing ");
-		else printf("freeing\n");
+		//if (operation == 0) printf("mallocing ");
+		//else printf("freeing\n");
 		if (operation == 0) {
 			int numBytes = rand() % (64+1-1)+1;
-			printf("%d bytes\n", numBytes);
+			//printf("%d bytes\n", numBytes);
 			void* allocatePtr = malloc(numBytes);
 			arr[index] = allocatePtr;
 			index++;
@@ -93,7 +93,7 @@ void workLoadD() {
 	{
 	 free(arr[i]);
 	}
-	printf("end workload d\n");
+//	printf("end workload d\n");
 }
 
 void workLoadE() {
@@ -129,7 +129,11 @@ int main(int argc, char** argv){
 	struct timeval start, end;
 	double totalTime;
 	int i = 0;
-	
+	/*
+	for (i = 0; i < 100; i++) {
+		workLoadD();
+	}
+	*/
 	while (i != 100) {
 	
 		gettimeofday(&start, NULL);
@@ -150,9 +154,22 @@ int main(int argc, char** argv){
 		totalTime = end.tv_usec - start.tv_usec;
 		times[2] = times[2] + totalTime;
 		*/
+		gettimeofday(&start, NULL);
+		workLoadE();
+		gettimeofday(&end, NULL);
+		totalTime = end.tv_usec - start.tv_usec;
+		times[4] = times[4] + totalTime;
+		i++;
+
+		gettimeofday(&start, NULL);
+		workLoadF();
+		gettimeofday(&end, NULL);
+		totalTime = end.tv_usec - start.tv_usec;
+		times[5] = times[5] + totalTime;
 		i++;
 	}
-	printf("A: %f B: %f C: %f \n", times[0], times[1], times[2]);
+
+	printf("A: %f B: %f C: %f D: %f E: %f F: %f\n", times[0]/100, times[1]/100, times[2], times[3], times[4]/100, times[5]/100);
 	//workLoadE();
 	//workLoadC();
 	//workLoadF();
