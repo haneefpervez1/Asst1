@@ -25,7 +25,7 @@ void workLoadB() {
 }
 void workLoadC() {
 	void * arr[5000];
-	int allocated, index=0;
+	int i,allocated, index=0;
 	printf("%f\n", arr[index]);
 	while(allocated!=50){
 		int a = (rand() % 2);
@@ -35,30 +35,31 @@ void workLoadC() {
 		 allocated++;
 		}
 		else if (a==1 && index!=0){		//Free as Long as there is a pointer to free
-		 int f = (rand() % index+1);
-		 void * temp = arr[index];		 
-		 free(arr[f]);
-		 arr[f]=NULL;
-		 arr[index] = arr[f];
-		 arr[f] = temp;
-		 index--;
+		int f = (rand() % index);
+			if(f == index-1)
+			{
+				free(arr[f]);
+				arr[f]= 0;
+			}
+			else
+			{		 
+		 		free(arr[f]);
+				arr[f]=arr[index-1];
+		 		arr[index-1] = 0;
+			}
+		index--;
 		}
 	}
-	while(index!=0){
-	 	 int f = (rand() % index+1);
-		 void * temp = arr[index];		 
-		 free(arr[f]);
-		 arr[f]=NULL;
-		 arr[index] = arr[f];
-		 arr[f] = temp;
-		 index--;
+	for(i=index-1; i>=0;i--)
+	{
+		free(arr[i]);
 	}
 }
 
 void workLoadD() {
 	printf("workload d\n");
-	void* arr[5000];
-	int numMallocs = 0, index = 0;
+	void* arr[4000];
+	int i, numMallocs = 0, index = 0;
 	while (numMallocs != 50) {
 		int operation = rand() % (2);
 		if (operation == 0) printf("mallocing ");
@@ -70,10 +71,27 @@ void workLoadD() {
 			arr[index] = allocatePtr;
 			index++;
 			numMallocs++;
-		} else {
-			int freeIndex = rand() % (index+1);
+		} 
+		else if(operation==1 && index!=0) {
+			int freeIndex = rand() % (index);
 			free(arr[freeIndex]);
+			if(freeIndex == index-1)
+			{
+				free(arr[freeIndex]);
+				arr[freeIndex]= 0;
+			}
+			else
+			{		 
+		 		free(arr[freeIndex]);
+				arr[freeIndex]=arr[index-1];
+		 		arr[index-1] = 0;
+			}
+		index--;
 		}
+	}
+	for(i=index;i>=0;i--)
+	{
+	 free(arr[i]);
 	}
 	printf("end workload d\n");
 }
@@ -82,15 +100,28 @@ void workLoadE() {
 	void * arr[3];
 	int i;
 	for(i=0;i<3;i++){
-	 arr[i]=malloc(10);
+	 arr[i]=malloc(1);
 	}
-	free(arr[2]);
-	free(arr[1]);
 	free(arr[0]);
+	free(arr[1]);
+	free(arr[2]);
 }
 
 void workLoadF() {	
-
+	void* arr[6];
+	int i,count=0;
+	for(i=0;i<6;i++){
+	 count+=15000;
+	 arr[i]=malloc(count);
+	}
+	for(i=5;i>=3;i--)
+	{
+	 free(arr[i]);
+	}
+	for(i=0;i<3;i++)
+	{
+	 free(arr[i]);
+	}
 }
 
 int main(int argc, char** argv){

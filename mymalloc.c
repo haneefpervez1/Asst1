@@ -8,71 +8,57 @@ void* mymalloc(int x, char* file, int line) {
 	short magic=1999;								// This is the magic number to check if the malloc call is the first malloc or not
 	//printf("magic number size %d\n", sizeof(magic));
 	if (x <= 0){									// Returns NULL if user tries to malloc an invalid number (0 or negative number)
-		printf("Enter a valid number to malloc\n");
+		printf("Located in file %s, line %d,Enter a valid number to malloc\n", file, line);
 		return NULL;
-	} if ((x + sizeof(struct memEntry)) >= 4096)		// Returns NULL if user tries to malloc something that is too large to fit in myblock
-	 {
-		printf("%d is too large\n", x);
+	} if ((x + sizeof(struct memEntry)) >= 4096){		// Returns NULL if user tries to malloc something that is too large to fit in myblock
+		printf("Located in file %s, line %d, %d is too large for memory allocation \n", file, line, x);
 		return NULL;
 	}
-	
-	  if ( *(short *)myblock!= magic) {					// This part checks if it is the first malloc,
-		*((short*)myblock) = magic;						// if it is it adds the magic number to the beginning of 
-	 // *(short *)&myblock=magic;						// myblock and adds the first metadata
+	  if ( *(short *)myblock!= magic) {				// This part checks if it is the first malloc,
+		*((short*)myblock) = magic;				// if it is it adds the magic number to the beginning of myblock and adds the first metadata
 		printf("short %d\n", *((short*)myblock));
-	  head = (struct memEntry*)&myblock[sizeof(struct memEntry)]; // myblock
-	  head->next = NULL;
-	  head->size = 4096 - sizeof(struct memEntry) - sizeof(short);
-	  head->isFree=1;
-	  //struct memEntry* temp = head;
-		/*
-	  while (temp != NULL) {
-		printf("size: %d isFree: %d \n", temp->size, temp->isFree);
-		temp = temp->next;
-	}
-	*/
-	} else {
-		head = (struct memEntry*)&myblock[sizeof(struct memEntry)];
-	}
+	  	head = (struct memEntry*)&myblock[sizeof(struct memEntry)]; // myblock
+	  	head->next = NULL;
+	  	head->size = 4096 - sizeof(struct memEntry) - sizeof(short);
+	  	head->isFree=1;}
+	 else 
+	 { 
+	 head = (struct memEntry*)&myblock[sizeof(struct memEntry)];
+	 }
 	 printf("inserting %d\n", x);
 	 struct memEntry* new = head;
 	 while(new != NULL) {
-	 	if(new->size>=x && new->isFree==1) {				// if there has been a previous malloc call that has been freed and can
-	 	  new->isFree=0;									// fit the size of the new malloc call it will be added here
-	 	  int size_remain = new->size - x;	 	  
-	 	  new->size = x;
-	 	  
-	 	  if( size_remain > sizeof(struct memEntry) + 1 )	// if a new memEntry needs to be created
-	 	  {	 	  
-		 	  char* ptr = (char *)new;						// moving a char ptr to the right place
-		 	  ptr = ptr + sizeof(struct memEntry);			
-		 	  ptr = ptr + new->size;
-		 	  
-		 	  struct memEntry* nextNode = (struct memEntry*) ptr;		// adding the new metadata and allocating the space
-		 	  nextNode->size = size_remain - sizeof(struct memEntry);
-		 	  nextNode->isFree=1;
-		 	  nextNode->next = new->next;
-		 	  new->next = nextNode;
-	 	  }
-	 	  break;
+	 if(new->size>=x && new->isFree==1) {				// if there has been a previous malloc call that has been freed and can
+	 	new->isFree=0;									// fit the size of the new malloc call it will be added here
+	 	int size_remain = new->size - x;	 	  
+	 	new->size = x;
+	 	if( size_remain > sizeof(struct memEntry) + 1 )	// if a new memEntry needs to be created
+	 	{	 	  
+			char* ptr = (char *)new;						// moving a char ptr to the right place
+			ptr = ptr + sizeof(struct memEntry);			
+			ptr = ptr + new->size;
+			struct memEntry* nextNode = (struct memEntry*) ptr;		// adding the new metadata and allocating the space
+		 	nextNode->size = size_remain - sizeof(struct memEntry);
+		 	nextNode->isFree=1;
+		 	nextNode->next = new->next;
+		 	new->next = nextNode;
 	 	}
-	 new = new->next;;
+	 	break;
+	 }
+	new = new->next;;
 	}
 	struct memEntry* temp = head;
 	while (temp != NULL) {
 		printf("size: %d isFree: %d \n", temp->size, temp->isFree);
 		temp = temp->next;
 	}
-	
 	if(new==NULL)
 	{
 	 printf("new is null\n");
 	 return NULL;
 	}
-	
 	char* ret = (char*)new;
 	ret = ret + sizeof(struct memEntry);	// moving the ptr to the start of the allocated spaces
-	
 	return (void *)(ret);					// returning the void ptr
 }
 /*
@@ -80,14 +66,12 @@ void* mymalloc(int x, char* file, int line) {
 */
 void myfree(void* F, char* file, int line) {
 	short magic = 1999;							// the magic number to check if something has been malloced already
-	//*((short*)myblock) = magic;
-	//printf("%d\n", *(short*)myblock);
 	if ( *(short*)myblock != magic) {			// the magic number is not in myblock meaning no mallocs have been made yet
-		printf("trying to free something that has not been malloced\n");
+		printf("Located in file %s, line %d,trying to free something that has not been malloced\n", file, line);
 		return;
 	}
 	if(F==NULL){								// the pointer given is NULL
-		printf("pointer F is NULL. Cannot free NULL pointer\n");
+		printf("Located in file %s, line %d,Cannot free a NULL pointer\n", file, line);
 		return;
 	}
 	printf("freeing \n");
@@ -108,7 +92,6 @@ void myfree(void* F, char* file, int line) {
 	{
 	 traversal(head, F);
 	}
-	//printf("%d\n", myblock[sizeof(short)]);
 	mergeMetadata();			// merges adjacent free nodes
 	while (head != NULL) {
 		printf("size: %d isFree %d \n", head->size, head->isFree);
@@ -123,7 +106,7 @@ void mergeMetadata() {
 	struct memEntry* head = (struct memEntry*)&myblock[sizeof(struct memEntry)];  // starting from the first metadata
 	//printf("merge %d\n", head->size);
 	struct memEntry* temp = head;
-	while (temp != NULL) 
+	while (temp->next!= NULL) 
 	{
 		if (temp->isFree == 1 && temp->next->isFree == 1 ) 
 		{
@@ -132,11 +115,11 @@ void mergeMetadata() {
 		*/
 			//printf("first free %d second free %d\n", temp->size, temp->next->size);
 			int tempSize = temp->next->size;
-			temp->size = temp->size + tempSize + sizeof(struct memEntry);
+			temp->size += tempSize + sizeof(struct memEntry);
 			struct memEntry* tempNode = temp->next;
 			temp->next = tempNode->next;
 			tempNode=NULL;
-			temp = temp->next;
+			mergeMetadata();
 			continue;
 		}
 		temp = temp->next;
@@ -158,15 +141,3 @@ void traversal(struct memEntry * head, void * ptr)
 	  P=P->next;	
 	 }	
 }
-
-/*int main (int argc, char** argv) {
-	void* a = mymalloc(10, "alack", 2);
-	void* b = mymalloc(20, "alack", 2);
-	myfree(b, "alack", 1);
-	void* c = mymalloc(30, "alack", 2);
-	myfree(c, "alack", 2);
-	void* d = mymalloc(60, "alack", 2);
-	void* e = mymalloc(10, "alack",2);
-	return 0;
-	//workLoadB();
-}*/
