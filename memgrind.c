@@ -92,10 +92,12 @@ void workLoadF() {
 }
 
 int main(int argc, char** argv){
+	workLoadA();
 	//workLoadC();
 	//workLoadF();
 	//workLoadD();
-	
+	/*
+	printf("in memgrind\n");
 	void* a = mymalloc(10, "alack", 2);
 	void* b = mymalloc(20, "alack", 2);
 	myfree(b, "alack", 1);
@@ -104,5 +106,6 @@ int main(int argc, char** argv){
 	void* d = mymalloc(60, "alack", 2);
 	void* e = mymalloc(10, "alack",2);
 	return 0;
+	*/
 }
 

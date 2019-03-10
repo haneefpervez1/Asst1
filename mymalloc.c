@@ -31,6 +31,8 @@ void* mymalloc(int x, char* file, int line) {
 		temp = temp->next;
 	}
 	*/
+	} else {
+		head = (struct memEntry*)&myblock[sizeof(struct memEntry)];
 	}
 	 printf("inserting %d\n", x);
 	 struct memEntry* new = head;
@@ -61,11 +63,13 @@ void* mymalloc(int x, char* file, int line) {
 		printf("size: %d isFree: %d \n", temp->size, temp->isFree);
 		temp = temp->next;
 	}
+	
 	if(new==NULL)
 	{
 	 printf("new is null\n");
 	 return NULL;
 	}
+	
 	char* ret = (char*)new;
 	ret = ret + sizeof(struct memEntry);	// moving the ptr to the start of the allocated spaces
 	
@@ -117,7 +121,7 @@ void myfree(void* F, char* file, int line) {
 */
 void mergeMetadata() {
 	struct memEntry* head = (struct memEntry*)&myblock[sizeof(struct memEntry)];  // starting from the first metadata
-	printf("merge %d\n", head->size);
+	//printf("merge %d\n", head->size);
 	struct memEntry* temp = head;
 	while (temp != NULL) 
 	{
@@ -126,10 +130,11 @@ void mergeMetadata() {
 		/*
 			This part combines two free nodes into one
 		*/
-			printf("first free %d second free %d\n", temp->size, temp->next->size);
+			//printf("first free %d second free %d\n", temp->size, temp->next->size);
 			int tempSize = temp->next->size;
 			temp->size = temp->size + tempSize + sizeof(struct memEntry);
 			struct memEntry* tempNode = temp->next;
+			printf("node %d will be set to null\n", tempNode->size);
 			tempNode = NULL;
 			temp->next = temp->next->next;
 			temp = temp->next;
@@ -157,6 +162,7 @@ void traversal(struct memEntry * head, void * ptr)
 
 /*
 int main (int argc, char** argv) {
+	
 	mymalloc(10, "alack", 2);
 	void* a = mymalloc(20, "alack", 2);
 	myfree(a, "alack", 1);
@@ -164,4 +170,16 @@ int main (int argc, char** argv) {
 	myfree(b, "alack", 2);
 	mymalloc(60, "alack", 2);
 	mymalloc(10, "alack",2);
+	
+	printf("in mymalloc\n");
+	void* a = mymalloc(10, "alack", 2);
+	void* b = mymalloc(20, "alack", 2);
+	myfree(b, "alack", 1);
+	void* c = mymalloc(30, "alack", 2);
+	myfree(c, "alack", 2);
+	void* d = mymalloc(60, "alack", 2);
+	void* e = mymalloc(10, "alack",2);
+	return 0;
+	
+	//workLoadB();
 }*/
