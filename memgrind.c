@@ -25,7 +25,7 @@ void workLoadB() {
 }
 void workLoadC() {
 	void * arr[5000];
-	int i,allocated, index=0;
+	int i,allocated=0, index=0;
 	//printf("%f\n", arr[index]);
 	while(allocated!=50){
 		int a = (rand() % 2);
@@ -38,12 +38,18 @@ void workLoadC() {
 		int f = (rand() % index);
 			if(f == index-1)
 			{
+				if(arr[f]!=NULL)
+				{
 				free(arr[f]);
 				arr[f]= 0;
+				}
 			}
 			else
-			{		 
+			{	
+				if(arr[f]!=NULL)
+				{	 
 		 		free(arr[f]);
+		 		}
 				arr[f]=arr[index-1];
 		 		arr[index-1] = 0;
 			}
@@ -52,14 +58,17 @@ void workLoadC() {
 	}
 	for(i=index-1; i>=0;i--)
 	{
+		if(arr[i]!=NULL)
+		{
 		free(arr[i]);
+		}
 	}
 }
 
 void workLoadD() {
 	//printf("workload d\n");
 	void* arr[4000];
-	int i, numMallocs = 0, index = 0;
+	int i, numMallocs = 0, index = 0, frees=0;
 	while (numMallocs != 50) {
 		int operation = rand() % (2);
 		//if (operation == 0) printf("mallocing ");
@@ -68,50 +77,62 @@ void workLoadD() {
 			int numBytes = rand() % (64+1-1)+1;
 			//printf("%d bytes\n", numBytes);
 			void* allocatePtr = malloc(numBytes);
+			if(allocatePtr==NULL)
+			{
+			continue;
+			}
 			arr[index] = allocatePtr;
 			index++;
 			numMallocs++;
 		} 
 		else if(operation==1 && index!=0) {
 			int freeIndex = rand() % (index);
-			free(arr[freeIndex]);
 			if(freeIndex == index-1)
 			{
+				if(arr[freeIndex]!=NULL)
+				{
 				free(arr[freeIndex]);
 				arr[freeIndex]= 0;
+				}
 			}
 			else
-			{		 
+			{
+				if(arr[freeIndex]!=NULL)
+				{		 
 		 		free(arr[freeIndex]);
+		 		}
 				arr[freeIndex]=arr[index-1];
 		 		arr[index-1] = 0;
 			}
+		frees++;
 		index--;
 		}
 	}
-	for(i=index;i>=0;i--)
+	//printf("frees: %d: Mallocs: %d\n", frees, numMallocs);
+	for(i=index-1;i>=0;i--)
 	{
-	 free(arr[i]);
+		if(arr[i]!=NULL)
+		{
+		 free(arr[i]);
+		}
 	}
 //	printf("end workload d\n");
 }
 
 void workLoadE() {
-	void * arr[3];
-	int i;
-	for(i=0;i<3;i++){
-	 arr[i]=malloc(1);
-	}
-	free(arr[0]);
-	free(arr[1]);
-	free(arr[2]);
+	void * a=malloc(1);
+	void * b=malloc(2);
+	void * c=malloc(3);
+	free(a);
+	free(b);
+	free(c);
 }
 
 void workLoadF() {	
 	void* arr[6];
 	int i,count=0;
 	for(i=0;i<6;i++){
-	 count+=15000;
+	 count+=150;
 	 arr[i]=malloc(count);
 	}
 	for(i=5;i>=3;i--)
@@ -129,47 +150,49 @@ int main(int argc, char** argv){
 	struct timeval start, end;
 	double totalTime;
 	int i = 0;
-	/*
-	for (i = 0; i < 100; i++) {
-		workLoadD();
-	}
-	*/
-	while (i != 100) {
-	
+	for(i=0;i<=100;i++) {		
 		gettimeofday(&start, NULL);
 		workLoadA();
 		gettimeofday(&end, NULL);
 		totalTime = end.tv_usec - start.tv_usec;
 		times[0] = times[0] + totalTime;
-
+	}
+	for(i=0;i<=100;i++) {
 		gettimeofday(&start, NULL);
 		workLoadB();
 		gettimeofday(&end, NULL);
 		totalTime = end.tv_usec - start.tv_usec;
 		times[1] = times[1] + totalTime;
-/*
+	}
+	for(i=0;i<=1;i++) {
 		gettimeofday(&start, NULL);
 		workLoadC();
 		gettimeofday(&end, NULL);
 		totalTime = end.tv_usec - start.tv_usec;
 		times[2] = times[2] + totalTime;
-		*/
+	}
+	for(i=0;i<=100;i++) {
+		gettimeofday(&start, NULL);
+		workLoadD();
+		gettimeofday(&end, NULL);
+		totalTime = end.tv_usec - start.tv_usec;
+		times[3] = times[3] + totalTime;
+	}
+	for(i=0;i<=100;i++) {
 		gettimeofday(&start, NULL);
 		workLoadE();
 		gettimeofday(&end, NULL);
 		totalTime = end.tv_usec - start.tv_usec;
 		times[4] = times[4] + totalTime;
-		i++;
-
+	}
+	for(i=0;i<=100;i++) {
 		gettimeofday(&start, NULL);
 		workLoadF();
 		gettimeofday(&end, NULL);
 		totalTime = end.tv_usec - start.tv_usec;
 		times[5] = times[5] + totalTime;
-		i++;
 	}
-
-	printf("A: %f B: %f C: %f D: %f E: %f F: %f\n", times[0]/100, times[1]/100, times[2], times[3], times[4]/100, times[5]/100);
+	printf("A: %f B: %f C: %f D: %f E: %f F: %f\n", times[0]/100, times[1]/100, times[2]/100, times[3]/100, times[4]/100, times[5]/100);
 	//workLoadE();
 	//workLoadC();
 	//workLoadF();
