@@ -1,25 +1,26 @@
 #include "mymalloc.h"
 
-/*void workLoadA() {
+void workLoadA() {
 	int i = 0;
 	for (i = 0; i < 150; i++) {
 		void *a =malloc(1);
 		free(a);
 	}
-}*/
+}
 void workLoadB() {
-	void * arr[3000];
-	int i,malloc_Count;
-	malloc_Count=0;
-	for(i=0;i<150;i++){
-		arr[i] = malloc(1);
-		malloc_Count ++;	
-	   	if(malloc_Count==50){ 
-			break;
- 		}
- 	}
- 	for(i=0;i<150;i++){
-  	free(arr[i]);
+	void * arr[1000];
+	int i,j,malloc_count;
+	for(i=0; i<150;i++) {
+		
+		arr[i]=malloc(1);
+		malloc_count++;
+		if(malloc_count==50){
+			for(j=0;j<50;j++)
+			{
+			 free(arr[j]);
+			 malloc_count--;
+			}
+		}
  	}
 }
 void workLoadC() {
@@ -92,20 +93,20 @@ void workLoadF() {
 
 }
 
-/*int main(int argc, char** argv){
+int main(int argc, char** argv){
+	//workLoadE();
 	//workLoadC();
 	//workLoadF();
 	//workLoadD();
-	workLoadA();
-	void* a = mymalloc(10, "alack", 2);
+	//workLoadA();
+	//workLoadB();
+	/*void* a = mymalloc(10, "alack", 2);
 	void* b = mymalloc(20, "alack", 2);
 	myfree(b, "alack", 1);
 	void* c = mymalloc(30, "alack", 2);
 	myfree(c, "alack", 2);
 	void* d = mymalloc(60, "alack", 2);
-	void* e = mymalloc(10, "alack",2);
+	void* e = mymalloc(10, "alack",2);*/
 	return 0;
 }
-=======
-}*/
 

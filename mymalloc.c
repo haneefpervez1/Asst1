@@ -159,7 +159,7 @@ void traversal(struct memEntry * head, void * ptr)
 	 }	
 }
 
-int main (int argc, char** argv) {
+/*int main (int argc, char** argv) {
 	void* a = mymalloc(10, "alack", 2);
 	void* b = mymalloc(20, "alack", 2);
 	myfree(b, "alack", 1);
@@ -169,4 +169,4 @@ int main (int argc, char** argv) {
 	void* e = mymalloc(10, "alack",2);
 	return 0;
 	//workLoadB();
-}
+}*/
